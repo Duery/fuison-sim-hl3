@@ -285,6 +285,58 @@ const PORT_CONFIGS: Record<string, PortConfig> = {
       gridSpacing: { poloidal: 0.08, toroidal: 0.08 },
     },
   },
+  hl3: {
+    portR: 2.55, portZ: 0, portRadius: 0.45, portLength: 0.25, portPhi: 0,
+    camR: 2.80, camZ: 0.04, camPhi: 0,
+    lookR: 1.25, lookZ: -0.02, lookPhi: 0.27, fov: 80,
+    tileColor: [28, 28, 32],
+    tileGridSpacing: { poloidal: 0.10, toroidal: 0.10 },
+    tileGridDarken: 0.25,
+    phiMin: -Math.PI, phiMax: Math.PI,
+    plasmaPhiMin: -1.40, plasmaPhiMax: 1.40,
+    nWallSlices: 100, nPlasmaSlices: 40,
+    tileRegions: {
+      inboardGridSpacing: { poloidal: 0.10, toroidal: 0.10 },
+      limiterGridSpacing: { poloidal: 0.10, toroidal: 0.18 },
+      limiterZThreshold: 0.9,
+    },
+    extraPorts: (() => {
+      // HL-3: medium-sized machine — equatorial diagnostic/RF ports
+      // plus upper/lower bands, similar density to DIII-D.
+      type Port = { theta: number; phi: number; radius: number; zRadius?: number;
+        shape?: 'circle' | 'square' | 'stadium'; toroidalExtent?: number; texture?: 'dark' | 'rf' }
+      const ports: Port[] = []
+      const nMid = 12
+      const dphiMid = (2 * Math.PI) / nMid
+      for (let k = 0; k < nMid; k++) {
+        const phi = k * dphiMid
+        const tex = (k % 3 === 0) ? 'rf' as const : 'dark' as const
+        if (k % 4 === 0) {
+          ports.push({ theta: 0, phi, radius: 0.24, zRadius: 0.22, shape: 'square', texture: 'rf' })
+        } else if (k % 4 === 2) {
+          ports.push({ theta: 0, phi, radius: 0.18, zRadius: 0.20, shape: 'square', texture: tex })
+        } else {
+          ports.push({ theta: 0, phi, radius: 0.14, zRadius: 0.18, shape: 'square', texture: tex })
+        }
+      }
+      const nUL = 16
+      const dphiUL = (2 * Math.PI) / nUL
+      for (let k = 0; k < nUL; k++) {
+        const phi = k * dphiUL
+        ports.push({ theta: 48, phi, radius: 0.10, zRadius: 0.10, shape: 'stadium', toroidalExtent: 0.05 })
+      }
+      for (let k = 0; k < nUL; k++) {
+        const phi = (k + 0.5) * dphiUL
+        ports.push({ theta: -48, phi, radius: 0.10, zRadius: 0.10, shape: 'stadium', toroidalExtent: 0.05 })
+      }
+      return ports
+    })(),
+    antennae: [
+      { r: 2.55, zMin: -0.25, zMax: 0.25, phiMin: 0.55, phiMax: 0.72 },
+      { r: 2.55, zMin: -0.15, zMax: 0.15, phiMin: -0.62, phiMax: -0.50 },
+    ],
+    fresnelStrength: 0.25,
+  },
 }
 
 export function getPortConfig(deviceId?: string, r0?: number, a?: number): PortConfig {
@@ -300,6 +352,7 @@ export const DEVICE_OPACITY_SCALE: Record<string, number> = {
   iter: 0.012,
   sparc: 0.10,
   jet: 0.020,
+  hl3: 0.06,
 }
 export const DEFAULT_OPACITY_SCALE = 0.10
 
@@ -311,6 +364,7 @@ export const DEVICE_POWER_SCALE: Record<string, number> = {
   iter: 5.0,       // most dazzling — 500 MW fusion, extreme divertor heat flux
   sparc: 0.8,
   jet: 1.5,        // moderate — 29 MW heating, visible but not dramatic
+  hl3: 0.05,       // subtle — mid-size research tokamak, modest divertor load
 }
 export const DEFAULT_POWER_SCALE = 0.5
 
@@ -357,6 +411,13 @@ export const DEVICE_GLOW_TUNING: Record<string, GlowTuning> = {
     jitterAmplitude: 0.007,
     flickerDepth: 0.25,
     pointSize: 0.35,
+  },
+  // HL-3: subtle warm glow — mid-size research tokamak
+  hl3: {
+    color: { r: 1.0, g: 0.40, b: 0.12 },       // warm orange
+    jitterAmplitude: 0.004,
+    flickerDepth: 0.18,
+    pointSize: 0.20,
   },
 }
 

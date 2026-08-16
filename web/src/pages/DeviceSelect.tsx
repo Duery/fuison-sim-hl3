@@ -27,6 +27,11 @@ const DEVICE_META: Record<string, { location: string; status?: string; desc: str
     status: 'Decommissioned',
     desc: "Europe's largest tokamak — holds the world record for fusion energy with its ITER-Like Wall.",
   },
+  hl3: {
+    location: 'Chengdu, China',
+    status: 'Operational',
+    desc: "China's flagship medium-sized tokamak (formerly HL-2M) — lower-single-null H-mode machine targeting 1 MA+ plasmas with NBI/ECRH/LHCD.",
+  },
 }
 
 const DEVICE_LIMITERS: Record<string, [number, number][]> = {

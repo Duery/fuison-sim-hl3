@@ -220,6 +220,28 @@ fn iter_wall() -> Vec<(f64, f64)> {
     wall
 }
 
+/// Approximate HL-3 first wall outline (D-shaped, parametric).
+///
+/// HL-3 (Huanliu-3, formerly HL-2M) at the Southwestern Institute of
+/// Physics (SWIP), Chengdu, China. Public design parameters: R0 = 1.78 m,
+/// a = 0.65 m, kappa ~ 1.75, delta ~ 0.40, lower-single-null diverted plasma.
+/// Traversed clockwise starting from the outboard midplane.
+fn hl3_wall() -> Vec<(f64, f64)> {
+    let n = 60;
+    let r0 = 1.78;
+    let a_wall = 0.88;
+    let kappa_wall = 1.75;
+    let delta_wall: f64 = 0.40;
+    let mut wall = Vec::with_capacity(n + 1);
+    for i in 0..=n {
+        let theta = 2.0 * std::f64::consts::PI * (i as f64) / (n as f64);
+        let r = r0 + a_wall * (theta + delta_wall * theta.sin()).cos();
+        let z = kappa_wall * a_wall * theta.sin();
+        wall.push((r, z));
+    }
+    wall
+}
+
 pub fn diiid() -> Device {
     Device {
         name: "DIII-D".to_string(),
@@ -410,18 +432,58 @@ pub fn centaur() -> Device {
     }
 }
 
+/// HL-3 (Huanliu-3, formerly HL-2M) — China's flagship medium-sized tokamak
+/// at the Southwestern Institute of Physics (SWIP), Chengdu.
+///
+/// Public design parameters: R0 = 1.78 m, a = 0.65 m, Bt <= 2.2 T,
+/// Ip <= 2.5 MA (design targets up to 3.0 MA). Lower-single-null diverted
+/// H-mode machine with NBI + ECRH + LHCD heating. Achieved 1 MA plasmas in
+/// 2024 and high-confinement H-mode operation in 2023.
+pub fn hl3() -> Device {
+    Device {
+        name: "HL-3".to_string(),
+        id: "hl3".to_string(),
+        r0: 1.78,
+        a: 0.65,
+        bt_max: 2.2,
+        ip_max: 2.5,
+        kappa: 1.75,
+        delta_upper: 0.40,
+        delta_lower: 0.40,
+        volume: 25.0,
+        surface_area: 70.0,
+        mass_number: 2.0, // deuterium baseline (D-D operation)
+        z_eff: 1.5,
+        z0: 0.0,
+        wall_outline: hl3_wall(),
+        config: MagneticConfig::LowerSingleNull,
+        impurity_elm: ImpurityElmParams {
+            // Mid-size metal-wall machine — similar ELM regime to DIII-D/JET.
+            impurity_type1_onset: 0.0005,
+            impurity_type2_threshold: 0.001,
+            impurity_qce_threshold: 0.003,
+            impurity_collapse_threshold: 0.02,
+            q95_grassy_range: (6.0, 7.5),
+            delta_grassy_min: 0.4,
+        },
+        p_lh_factor: 1.0,
+        confinement_factor: 1.0,
+    }
+}
+
 pub fn get_device(id: &str) -> Option<Device> {
     match id {
         "diiid" => Some(diiid()),
         "iter" => Some(iter()),
         "jet" => Some(jet()),
         "centaur" => Some(centaur()),
+        "hl3" => Some(hl3()),
         _ => None,
     }
 }
 
 pub fn all_devices() -> Vec<Device> {
-    vec![diiid(), centaur(), iter(), jet()]
+    vec![diiid(), centaur(), hl3(), iter(), jet()]
 }
 
 #[cfg(test)]
