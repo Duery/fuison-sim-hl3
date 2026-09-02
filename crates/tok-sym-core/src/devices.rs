@@ -147,6 +147,30 @@ fn diiid_wall() -> Vec<(f64, f64)> {
     ]
 }
 
+/// Approximate EAST first-wall envelope for the interactive model.
+///
+/// Public machine parameters constrain the plasma size and shaping, but this
+/// repository does not include an EAST engineering/CAD contour.  The envelope
+/// below is therefore a deliberately smooth D-shaped vessel with clearance
+/// around the nominal plasma, not a claim about individual plasma-facing
+/// components or divertor target geometry.
+fn east_wall() -> Vec<(f64, f64)> {
+    let r0 = 1.85;
+    let wall_minor_radius = 0.62;
+    let wall_half_height = 1.08;
+    let wall_triangularity = 0.32;
+    let n = 64;
+
+    (0..=n)
+        .map(|i| {
+            let theta = std::f64::consts::TAU * i as f64 / n as f64;
+            let r = r0 + wall_minor_radius * (theta + wall_triangularity * theta.sin()).cos();
+            let z = wall_half_height * theta.sin();
+            (r, z)
+        })
+        .collect()
+}
+
 /// Approximate JET wall outline (simplified D-shaped polygon).
 ///
 /// Based on the JET Mk2 ITER-Like Wall cross-section with a D-shaped outer
@@ -523,9 +547,50 @@ pub fn hl3() -> Device {
     }
 }
 
+/// EAST (Experimental Advanced Superconducting Tokamak) at ASIPP, Hefei.
+///
+/// This is a public-parameter approximation rather than an engineering model.
+/// Nominal limits and shaping are based on the EAST facility description and
+/// published device summaries: R0 ≈ 1.8–1.85 m, a ≈ 0.45 m, Bt <= 3.5 T,
+/// Ip <= 1.0 MA, kappa ≈ 1.5–2.0 and delta ≈ 0.3–0.6.
+/// Sources:
+/// - https://english.hf.cas.cn/ic/ip/east/
+/// - https://doi.org/10.1038/srep32440
+pub fn east() -> Device {
+    Device {
+        name: "EAST".to_string(),
+        id: "east".to_string(),
+        r0: 1.85,
+        a: 0.45,
+        bt_max: 3.5,
+        ip_max: 1.0,
+        kappa: 1.80,
+        delta_upper: 0.50,
+        delta_lower: 0.50,
+        volume: 13.3,
+        surface_area: 47.0,
+        mass_number: 2.0,
+        z_eff: 1.6,
+        z0: 0.0,
+        wall_outline: east_wall(),
+        config: MagneticConfig::DoubleNull,
+        impurity_elm: ImpurityElmParams {
+            impurity_type1_onset: 0.0005,
+            impurity_type2_threshold: 0.001,
+            impurity_qce_threshold: 0.003,
+            impurity_collapse_threshold: 0.02,
+            q95_grassy_range: (5.0, 7.0),
+            delta_grassy_min: 0.35,
+        },
+        p_lh_factor: 1.0,
+        confinement_factor: 1.0,
+    }
+}
+
 pub fn get_device(id: &str) -> Option<Device> {
     match id {
         "diiid" => Some(diiid()),
+        "east" => Some(east()),
         "iter" => Some(iter()),
         "jet" => Some(jet()),
         "centaur" => Some(centaur()),
@@ -535,7 +600,8 @@ pub fn get_device(id: &str) -> Option<Device> {
 }
 
 pub fn all_devices() -> Vec<Device> {
-    vec![diiid(), centaur(), hl3(), iter(), jet()]
+    // Keep the experimental machines first; HL-3 is intentionally second.
+    vec![diiid(), hl3(), east(), centaur(), iter(), jet()]
 }
 
 #[cfg(test)]
@@ -576,5 +642,20 @@ mod tests {
         let device = hl3();
         assert!((device.bt_max - 2.3).abs() < f64::EPSILON);
         assert!((device.ip_max - 3.0).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn test_east_public_parameter_model() {
+        let device = east();
+        assert!((device.r0 - 1.85).abs() < f64::EPSILON);
+        assert!((device.a - 0.45).abs() < f64::EPSILON);
+        assert!((device.bt_max - 3.5).abs() < f64::EPSILON);
+        assert!((device.ip_max - 1.0).abs() < f64::EPSILON);
+        assert_eq!(device.config, MagneticConfig::DoubleNull);
+        assert!(device.wall_outline.len() >= 64);
+        let first = device.wall_outline.first().unwrap();
+        let last = device.wall_outline.last().unwrap();
+        assert!((first.0 - last.0).abs() < 1e-12);
+        assert!((first.1 - last.1).abs() < 1e-12);
     }
 }

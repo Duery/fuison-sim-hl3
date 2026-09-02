@@ -57,6 +57,7 @@ const SCALAR_PARAMS: ScalarParam[] = [
 
 const DURATION_MAX: Record<string, number> = {
   diiid: 10,
+  east:  100,
   jet:   60,
   iter:  400,
 }

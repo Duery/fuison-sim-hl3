@@ -34,6 +34,12 @@ const DEVICE_META: Record<string, { location: string; status?: string; desc: str
     desc: '中国新一代中型托卡马克（原 HL-2M），面向高参数 H 模运行与磁约束聚变关键物理研究。',
     details: ['96 路 ECE 配置', '176 路 SXR 配置', 'Mirnov 三组阵列', 'NBI / ECRH / LHCD'],
   },
+  east: {
+    location: '中国 · 合肥',
+    status: '运行中',
+    desc: '全超导先进实验托卡马克，面向稳态、长脉冲高性能等离子体运行与 ITER 相关关键问题研究。',
+    details: ['公开参数近似模型', '3.5 T / 1.0 MA', '全超导磁体', '灵活偏滤器位形'],
+  },
 }
 
 const DEVICE_LIMITERS: Record<string, [number, number][]> = {
@@ -173,7 +179,7 @@ export default function DeviceSelect() {
           </div>
 
           {/* Hairline-tiled device row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-[var(--c-line)] border-y border-gray-800">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-[var(--c-line)] border-y border-gray-800">
             {devices.map((d, i) => {
               const meta = DEVICE_META[d.id] ?? { location: '', desc: '' }
               return (

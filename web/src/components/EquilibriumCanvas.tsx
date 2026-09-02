@@ -258,6 +258,14 @@ export default function EquilibriumCanvas({ snapshot, wallJson, limiterPoints }:
       ctx.moveTo(xp + s, yp - s)
       ctx.lineTo(xp - s, yp + s)
       ctx.stroke()
+
+      // Keep the magnetic null visually distinct from the divertor strike
+      // points where the yellow separatrix legs meet the material boundary.
+      ctx.fillStyle = isRetro ? '#ffff33' : '#f87171'
+      ctx.font = '9px monospace'
+      ctx.textAlign = 'left'
+      ctx.textBaseline = 'bottom'
+      ctx.fillText('X 点', xp + 7, yp - 5)
     }
     if (hasPlasma && snapshot.xpoint_r > 0) {
       drawXMark(snapshot.xpoint_r, snapshot.xpoint_z)
@@ -500,6 +508,20 @@ function extendLegsToWall(
     ctx.moveTo(toX(end[0]), toY(end[1]))
     ctx.lineTo(toX(h[0]), toY(h[1]))
     ctx.stroke()
+
+    // Mark the target intersection explicitly. This makes it clear that the
+    // separatrix touches the wall only at a divertor strike point; the X-point
+    // itself remains inside the vacuum vessel.
+    ctx.save()
+    ctx.shadowBlur = 0
+    ctx.fillStyle = '#f59e0b'
+    ctx.strokeStyle = '#111827'
+    ctx.lineWidth = 1
+    ctx.beginPath()
+    ctx.arc(toX(h[0]), toY(h[1]), 3, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.stroke()
+    ctx.restore()
   }
 
   for (const ch of chains) {

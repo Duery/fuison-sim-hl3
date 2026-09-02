@@ -348,6 +348,7 @@ export function getPortConfig(deviceId?: string, r0?: number, a?: number): PortC
 // DIII-D visible, JET/ITER nearly invisible except during ELMs
 export const DEVICE_OPACITY_SCALE: Record<string, number> = {
   diiid: 0.08,
+  east: 0.05,
   centaur: 0.06,
   iter: 0.012,
   sparc: 0.10,
@@ -360,6 +361,7 @@ export const DEFAULT_OPACITY_SCALE = 0.10
 // Hierarchy: ITER (highest heat flux) > CENTAUR > JET > DIII-D (most subtle)
 export const DEVICE_POWER_SCALE: Record<string, number> = {
   diiid: 0.02,     // barely perceptible — low-power research tokamak
+  east: 0.05,      // superconducting research tokamak — modest target glow
   centaur: 3.0,    // dazzling — high-field D-T breakeven, intense divertor load
   iter: 5.0,       // most dazzling — 500 MW fusion, extreme divertor heat flux
   sparc: 0.8,
@@ -383,6 +385,13 @@ export const DEVICE_GLOW_TUNING: Record<string, GlowTuning> = {
     jitterAmplitude: 0.001,
     flickerDepth: 0.05,
     pointSize: 0.08,
+  },
+  // EAST: restrained glow for a medium-size long-pulse research machine
+  east: {
+    color: { r: 1.0, g: 0.38, b: 0.10 },
+    jitterAmplitude: 0.003,
+    flickerDepth: 0.15,
+    pointSize: 0.18,
   },
   // CENTAUR: dazzling — 30 MW ICRH into compact NT plasma, intense divertor load
   centaur: {

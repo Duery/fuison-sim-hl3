@@ -32,7 +32,7 @@ Rust / WebAssembly 物理引擎 · React 中文控制台 · HL-3 实验背景与
 
 ## 主要特性
 
-- **五套装置模型：** HL-3、DIII-D、JET、ITER，以及概念型负三角形变装置 CENTAUR。
+- **六套装置模型：** DIII-D、HL-3、EAST、JET、ITER，以及概念型负三角形变装置 CENTAUR。
 - **全中文界面：** 设备选择、控制室、放电规划、诊断曲线、参数说明与参考资料均已汉化。
 - **HL-3 专项增强：** 基于项目资料重建 2 m 尺度第一壁外形，并补充装置、诊断和锯齿研究背景。
 - **浏览器实时仿真：** Rust 物理内核通过 WebAssembly 在本地运行，无需后端计算服务。
@@ -55,6 +55,10 @@ Rust / WebAssembly 物理引擎 · React 中文控制台 · HL-3 实验背景与
 | 基线燃料 | D-D | 用于当前仿真场景 |
 
 HL-3 第一壁不是简单的椭圆或圆环外壳。当前版本依据项目资料中的 `addFirstWall_2m.m` 几何信息重新生成边界，使二维截面与三维外壳更接近 2 m 装置的实际轮廓。
+
+### EAST 公开参数近似模型
+
+EAST 模型采用公开资料给出的约束范围：$R_0=1.85\,\mathrm{m}$、$a=0.45\,\mathrm{m}$、$B_T\le3.5\,\mathrm{T}$、$I_p\le1.0\,\mathrm{MA}$，基线伸长比取 1.8、三角度取 0.5。由于仓库没有 EAST 工程/CAD 第一壁数据，当前外壳仅为带合理间隙的 D 形近似，不能用于判断真实部件位置或靶板几何。参数参考 [中国科学院合肥物质科学研究院 EAST 介绍](https://english.hf.cas.cn/ic/ip/east/) 与 [Scientific Reports 装置参数说明](https://doi.org/10.1038/srep32440)。
 
 ### 诊断测量特点
 
@@ -179,7 +183,7 @@ fusion-sim-hl3/
 │       ├── equilibrium.rs     解析 Grad–Shafranov 平衡
 │       ├── transport.rs       0D 功率平衡与约束标度
 │       ├── profiles.rs        Tanh 台基径向剖面
-│       ├── devices.rs         五套装置参数与几何定义
+│       ├── devices.rs         六套装置参数与几何定义
 │       ├── disruption.rs      破裂风险和动力学
 │       ├── diagnostics.rs     合成诊断信号
 │       ├── contour.rs         等值线提取
