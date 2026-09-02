@@ -485,11 +485,33 @@ pub struct Simulation {
     n_flux_surfaces: usize,
 }
 
+/// Minor-radius ratio used by the analytic equilibrium solver.
+///
+/// HL-3's catalogue value (`a = 0.65 m`) describes the nominal machine
+/// envelope.  The supplied 1370/1375 ms EFIT examples have an effective
+/// plasma boundary radius near 0.505 m, so the analytic equilibrium uses
+/// 0.52 m while preserving the published catalogue value.  Apart from this
+/// geometry input, HL-3 follows the same equilibrium evolution and contour
+/// extraction path as DIII-D and every other device.
+fn equilibrium_epsilon(device: &Device) -> f64 {
+    if device.id == "hl3" {
+        0.52 / device.r0
+    } else {
+        device.epsilon()
+    }
+}
+
+fn initial_equilibrium(device: &Device) -> CerfonEquilibrium {
+    let mut shape = ShapeParams::from_device(device);
+    shape.epsilon = equilibrium_epsilon(device);
+    CerfonEquilibrium::solve(&shape, device.r0, device.z0)
+        .expect("Should be able to solve equilibrium for device")
+}
+
 impl Simulation {
     /// Create a new simulation for a given device and discharge program.
     pub fn new(device: Device, program: DischargeProgram) -> Self {
-        let equilibrium = CerfonEquilibrium::from_device(&device)
-            .expect("Should be able to solve equilibrium for device");
+        let equilibrium = initial_equilibrium(&device);
 
         let profiles = Profiles::for_device(&device.id);
         Simulation {
@@ -531,6 +553,7 @@ impl Simulation {
         self.smoothed_f_greenwald = 0.0;
         self.smoothed_p_rad_frac = 0.0;
         self.peak_prog_ip = 0.0;
+        self.equilibrium = initial_equilibrium(&self.device);
     }
 
     /// Start or resume the simulation.
@@ -710,6 +733,10 @@ impl Simulation {
             self.device.config
         };
 
+        // Keep the device-specific equilibrium radius consistent with the
+        // initial and reset states so the first animation frame cannot jump.
+        let base_epsilon = equilibrium_epsilon(&self.device);
+
         // During limited phase, reduce epsilon so plasma starts small and grows with Ip
         let ip_frac = if prog.ip > 0.1 {
             (self.actual_ip / prog.ip).clamp(0.0, 1.0)
@@ -717,13 +744,13 @@ impl Simulation {
             0.0
         };
         let epsilon = if config == MagneticConfig::Limited {
-            self.device.epsilon() * (0.35 + 0.65 * ip_frac)
+            base_epsilon * (0.35 + 0.65 * ip_frac)
         } else if config == MagneticConfig::DoubleNull {
             // DN plasma is smaller to fit within both upper and lower
             // divertor shelves of the limiter geometry.
-            self.device.epsilon() * 0.88
+            base_epsilon * 0.88
         } else {
-            self.device.epsilon()
+            base_epsilon
         };
 
         // During limited phase (δ < 0.1), the LSN X-point boundary conditions
@@ -1096,6 +1123,19 @@ mod tests {
                 "Should have separatrix during flat-top"
             );
         }
+    }
+
+    #[test]
+    fn test_hl3_keeps_catalogue_radius_but_uses_reference_equilibrium_radius() {
+        let device = devices::hl3();
+        assert_eq!(device.a, 0.65, "catalogue minor radius must remain nominal");
+        let program = DischargeProgram::standard_hmode(&device);
+        let mut sim = Simulation::new(device, program);
+        let expected_epsilon = 0.52 / 1.78;
+        assert!((sim.equilibrium.shape.epsilon - expected_epsilon).abs() < 1e-12);
+
+        sim.reset();
+        assert!((sim.equilibrium.shape.epsilon - expected_epsilon).abs() < 1e-12);
     }
 
     #[test]
