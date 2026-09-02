@@ -4,7 +4,8 @@
    DESIGN TOKENS  (single source of truth)
    Refined dark scientific-instrument palette — neutral charcoal, one
    restrained warm-amber accent, data viz as the hero. Deliberately NOT
-   navy/neon. Vintage hint = IBM Plex Mono on data only.
+   navy/neon. Noto Sans SC provides Chinese UI text; IBM Plex Mono is
+   reserved for scientific data and numeric readouts.
    @theme exposes these as Tailwind utilities (bg-surface, text-ink,
    border-line, text-accent, …) AND as :root CSS vars (var(--c-*)).
    ═══════════════════════════════════════════════════════════════════ */
@@ -13,7 +14,7 @@
    reserved --color-*), because Tailwind v4 strips redefinitions of its
    --color-* theme vars made outside @theme — which broke the retro override. */
 @theme {
-  --font-sans: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-sans: 'Noto Sans SC Variable', 'Noto Sans SC', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', 'Fira Code', monospace;
 }
 
