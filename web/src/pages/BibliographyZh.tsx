@@ -61,29 +61,6 @@ export default function BibliographyZh() {
           </ModelCard>
         </div>
 
-        <section className="mt-12 border border-cyan-900/50 bg-cyan-950/10 p-6">
-          <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-cyan-500">HL-3 实验背景</div>
-          <h2 className="mt-2 text-xl font-semibold text-white">几何和诊断信息的使用边界</h2>
-          <div className="mt-4 grid gap-5 text-sm leading-relaxed text-gray-400 md:grid-cols-3">
-            <div>
-              <h3 className="font-semibold text-cyan-300">ECE</h3>
-              <p className="mt-1">共振层附近的局域电子温度测量。频率到位置的映射随 Bₜ 和磁平衡变化。</p>
-            </div>
-            <div>
-              <h3 className="font-semibold text-amber-300">SXR</h3>
-              <p className="mt-1">沿视线积分的软 X 射线辐射，不是点测量；响应同时依赖温度、密度、杂质和滤片。</p>
-            </div>
-            <div>
-              <h3 className="font-semibold text-fuchsia-300">Mirnov</h3>
-              <p className="mt-1">带方向和极性的局域 dB/dt 测量。MHD 模数需要结合阵列几何与通道间相位判断。</p>
-            </div>
-          </div>
-          <p className="mt-5 border-t border-cyan-900/40 pt-4 text-xs leading-relaxed text-gray-500">
-            HL-3 第一壁取自 2m 工程绘图数据；诊断背景来自《HL-3 装置放电信号手册 v3.9》及配套 ECE、SXR、Mirnov 分析资料。
-            当前模拟器尚未逐通道实现这些真实测量算子。
-          </p>
-        </section>
-
         <section className="mt-12">
           <h2 className="panel-title">主要参考资料</h2>
           <ul className="mt-4 space-y-2 text-sm text-gray-500">

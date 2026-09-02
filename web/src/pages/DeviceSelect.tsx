@@ -32,7 +32,6 @@ const DEVICE_META: Record<string, { location: string; status?: string; desc: str
     location: '中国 · 成都',
     status: '运行中',
     desc: '中国新一代中型托卡马克（原 HL-2M），面向高参数 H 模运行与磁约束聚变关键物理研究。',
-    details: ['96 路 ECE 配置', '176 路 SXR 配置', 'Mirnov 三组阵列', 'NBI / ECRH / LHCD'],
   },
   east: {
     location: '中国 · 合肥',

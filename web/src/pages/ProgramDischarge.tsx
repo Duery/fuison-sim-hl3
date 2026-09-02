@@ -7,7 +7,6 @@ import {
   type WaveformPoint,
   type DischargeProgram,
 } from '../lib/wasm'
-import Hl3ContextPanel from '../components/Hl3ContextPanel'
 
 // ── Preset metadata ──────────────────────────────────────────────
 const ALL_PRESETS: { id: PresetId; name: string; desc: string; color: string }[] = [
@@ -186,8 +185,6 @@ export default function ProgramDischarge() {
         </p>
 
         {/* Scenario selector — hairline-tiled */}
-        {deviceId === 'hl3' && <Hl3ContextPanel />}
-
         <div className="panel-title pb-2 mb-px">运行场景</div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-[var(--c-line)] border-y border-gray-800 mb-10">
           {getPresets(deviceId ?? '').map((p) => {
