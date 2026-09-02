@@ -95,7 +95,7 @@ export default function InfoPopup({ children, title, position = 'right' }: InfoP
                       ? 'border-cyan-500 text-cyan-400 bg-cyan-500/10'
                       : 'border-gray-600 text-gray-500 hover:text-cyan-400 hover:border-cyan-500/50'
                     }`}
-        title={title ? `Info: ${title}` : 'Info'}
+        title={title ? `说明：${title}` : '说明'}
       >
         i
       </button>

@@ -68,7 +68,7 @@ export default function ProfilePanel({
       nRho,
       yMax: teMax,
       lineColor: '#ef4444',
-      label: 'Te (keV)',
+      label: 'Te（keV）',
       labelColor: '#ef4444',
       thomsonPoints: showThomson ? profile.te_thomson : null,
       scatterColor: '#fca5a5',
@@ -84,7 +84,7 @@ export default function ProfilePanel({
       nRho,
       yMax: neMax,
       lineColor: '#3b82f6',
-      label: 'ne (10²⁰/m³)',
+      label: 'ne（10²⁰/m³）',
       labelColor: '#3b82f6',
       thomsonPoints: showThomson ? profile.ne_thomson : null,
       scatterColor: '#93c5fd',
@@ -114,7 +114,7 @@ export default function ProfilePanel({
   if (!profiles || profiles.length === 0) {
     return (
       <div className="flex items-center justify-center h-full text-gray-600 text-xs font-mono">
-        Profile data available after discharge
+        放电结束后可查看径向剖面
       </div>
     )
   }
@@ -258,7 +258,7 @@ function drawProfileCanvas(canvas: HTMLCanvasElement, opts: DrawOpts) {
   if (thomsonPoints) {
     legendY += 10
     ctx.fillStyle = scatterColor
-    ctx.fillText('\u25cb Thomson', legendX, legendY)
+    ctx.fillText('\u25cb 汤姆孙散射', legendX, legendY)
   }
 
   // H-mode / L-mode badge
@@ -268,6 +268,6 @@ function drawProfileCanvas(canvas: HTMLCanvasElement, opts: DrawOpts) {
     ctx.font = 'bold 8px monospace'
     ctx.textAlign = 'center'
     ctx.fillStyle = hmodeLabel === 'H' ? '#06b6d4' : '#9ca3af'
-    ctx.fillText(`${hmodeLabel}-mode`, badgeX, badgeY)
+    ctx.fillText(`${hmodeLabel} 模`, badgeX, badgeY)
   }
 }

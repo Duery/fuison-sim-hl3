@@ -6,31 +6,33 @@ import { DIIID_LIMITER } from '../lib/diiid-geometry'
 import { JET_LIMITER } from '../lib/jet-geometry'
 import { ITER_LIMITER } from '../lib/iter-geometry'
 import { CENTAUR_LIMITER } from '../lib/centaur-geometry'
+import { HL3_FIRST_WALL } from '../lib/hl3-geometry'
 
 /** Extra display-only metadata keyed by device id. */
-const DEVICE_META: Record<string, { location: string; status?: string; desc: string }> = {
+const DEVICE_META: Record<string, { location: string; status?: string; desc: string; details?: string[] }> = {
   diiid: {
-    location: 'San Diego, USA',
-    desc: 'Scenario development workhorse dating back to the late 1980s. The most extensively diagnosed tokamak in the world.',
+    location: '美国 · 圣迭戈',
+    desc: '自 20 世纪 80 年代末运行至今的先进场景研究平台，也是诊断系统最完备的托卡马克之一。',
   },
   centaur: {
-    location: 'Conceptual design',
-    desc: 'Compact negative-triangularity breakeven tokamak — ELM-free Q > 1 at 10.9 T with HTS magnets.',
+    location: '概念设计',
+    desc: '紧凑型负三角形变盈亏平衡托卡马克，采用高温超导磁体，目标是在 10.9 T 下实现无 ELM、Q > 1。',
   },
   iter: {
-    location: 'Cadarache, France',
-    status: 'Under construction',
-    desc: "The world's largest tokamak — designed to demonstrate 500 MW of fusion power (Q ≥ 10).",
+    location: '法国 · 卡达拉舍',
+    status: '建设中',
+    desc: '世界最大的托卡马克，设计目标是演示 500 MW 聚变功率并达到 Q ≥ 10。',
   },
   jet: {
-    location: 'Culham, UK',
-    status: 'Decommissioned',
-    desc: "Europe's largest tokamak — holds the world record for fusion energy with its ITER-Like Wall.",
+    location: '英国 · 卡勒姆',
+    status: '已退役',
+    desc: '欧洲最大的托卡马克，采用类 ITER 第一壁，并保持着托卡马克聚变能量输出纪录。',
   },
   hl3: {
-    location: 'Chengdu, China',
-    status: 'Operational',
-    desc: "China's flagship medium-sized tokamak (formerly HL-2M) — lower-single-null H-mode machine targeting 1 MA+ plasmas with NBI/ECRH/LHCD.",
+    location: '中国 · 成都',
+    status: '运行中',
+    desc: '中国新一代中型托卡马克（原 HL-2M），面向高参数 H 模运行与磁约束聚变关键物理研究。',
+    details: ['96 路 ECE 配置', '176 路 SXR 配置', 'Mirnov 三组阵列', 'NBI / ECRH / LHCD'],
   },
 }
 
@@ -39,6 +41,7 @@ const DEVICE_LIMITERS: Record<string, [number, number][]> = {
   centaur: CENTAUR_LIMITER,
   jet: JET_LIMITER,
   iter: ITER_LIMITER,
+  hl3: HL3_FIRST_WALL,
 }
 
 /** SVG cross-section silhouette from limiter geometry (or wall outline fallback). */
@@ -127,14 +130,14 @@ export default function DeviceSelect() {
           fusionsimulator<span className="text-gray-600">.io</span>
         </span>
         <div className="flex items-center gap-5 font-mono text-[10px] tracking-[0.18em] uppercase text-gray-500">
-          <Link to="/bibliography" className="hover:text-cyan-400 transition-colors">Bibliography</Link>
+          <Link to="/bibliography" className="hover:text-cyan-400 transition-colors">物理依据</Link>
           <a
             href="https://github.com/d-burg/fusion-sim"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-cyan-400 transition-colors"
           >
-            GitHub
+            源代码
           </a>
         </div>
       </nav>
@@ -149,15 +152,15 @@ export default function DeviceSelect() {
             fusionsimulator<span className="text-gray-600">.io</span>
           </h1>
           <p className="stagger-2 mt-4 text-gray-400 text-base sm:text-lg font-mono tracking-tight">
-            Real-time tokamak discharge simulator
+            实时托卡马克放电模拟器
           </p>
           <p className="stagger-2 mt-2 text-gray-600 text-[11px] font-mono tracking-wider uppercase">
-            0D transport &middot; MHD equilibrium &middot; ELM dynamics &middot; Fusion diagnostics
+            0D 输运 &middot; MHD 平衡 &middot; ELM 动力学 &middot; 聚变诊断
           </p>
         </div>
         {/* Scroll affordance */}
         <div className="absolute bottom-7 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1.5 font-mono text-[10px] tracking-[0.18em] uppercase text-gray-600 scroll-hint">
-          <span>Select a device</span>
+          <span>向下选择装置</span>
           <span className="text-base leading-none">↓</span>
         </div>
       </header>
@@ -166,7 +169,7 @@ export default function DeviceSelect() {
       <main className="relative z-10 bg-[var(--c-base)] border-t border-gray-800 shadow-[0_-28px_60px_rgba(0,0,0,0.6)] px-6 sm:px-10 pt-12 pb-16">
         <div className="max-w-6xl mx-auto">
           <div className="panel-title pb-2 mb-px">
-            <span className="panel-num">01 · </span>Select a device
+            <span className="panel-num">01 · </span>选择托卡马克装置
           </div>
 
           {/* Hairline-tiled device row */}
@@ -207,9 +210,19 @@ export default function DeviceSelect() {
                     {meta.desc}
                   </p>
 
+                  {meta.details && (
+                    <div className="mt-3 flex flex-wrap gap-1.5">
+                      {meta.details.map((detail) => (
+                        <span key={detail} className="border border-cyan-900/60 bg-cyan-950/20 px-2 py-1 font-mono text-[9px] text-cyan-600">
+                          {detail}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
                   {/* Arrow */}
                   <div className="mt-4 font-mono text-[11px] uppercase tracking-wider text-gray-600 group-hover:text-cyan-400 transition-colors">
-                    Select →
+                    进入装置 →
                   </div>
                 </button>
               )
@@ -219,17 +232,15 @@ export default function DeviceSelect() {
           {/* Footer */}
           <footer className="mt-12 space-y-4 text-[11px] leading-relaxed">
             <div className="border-l-2 border-gray-700 pl-4 py-1 text-gray-500 max-w-3xl">
-              <span className="font-mono uppercase tracking-wider text-gray-400">Disclaimer</span>
-              {' — '}This simulator uses zero-dimensional scaling laws and analytic approximations
-              (0D power balance, IPB98(y,2) confinement scaling, Cerfon-Freidberg equilibrium).
-              Results are designed for <em>qualitative educational use</em> and should not be
-              interpreted as engineering predictions or used for reactor design.
+              <span className="font-mono uppercase tracking-wider text-gray-400">使用说明</span>
+              {' — '}本模拟器采用零维定标律与解析近似，包括 0D 功率平衡、IPB98(y,2) 约束定标和
+              Cerfon-Freidberg 平衡。结果仅用于<em>定性教学和概念探索</em>，不能视为工程预测，也不能用于反应堆设计。
             </div>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-wider text-gray-600 pt-2">
-              <span>Open-source · Educational</span>
+              <span>开源 · 教学用途</span>
               <span className="text-gray-700">·</span>
               <Link to="/bibliography" className="hover:text-cyan-400 transition-colors">
-                Physics Bibliography
+                物理模型与参考文献
               </Link>
               <span className="text-gray-700">·</span>
               <a
@@ -238,13 +249,13 @@ export default function DeviceSelect() {
                 rel="noopener noreferrer"
                 className="hover:text-cyan-400 transition-colors"
               >
-                GitHub
+                源代码
               </a>
               <span className="text-gray-700">·</span>
               <span>v{__APP_VERSION__}</span>
             </div>
             <p className="font-mono text-[10px] text-gray-700">
-              © 2026 Daniel Burgess · Columbia Fusion Research Center
+              © 2026 Daniel Burgess · 哥伦比亚聚变研究中心
             </p>
           </footer>
         </div>
@@ -274,11 +285,9 @@ export default function DeviceSelect() {
                   <ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)" />
                   <ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)" />
                 </svg>
-                <h2 className="text-xl font-bold text-white mb-1">New to Fusion?</h2>
+                <h2 className="text-xl font-bold text-white mb-1">第一次接触聚变？</h2>
                 <p className="text-gray-400 text-sm">
-                  Take a 2-minute guided tour of the control room to learn
-                  what each panel does, how tokamaks work, and what your
-                  objectives are.
+                  用两分钟跟随引导参观控制室，了解托卡马克如何工作、每个面板表示什么，以及本次模拟的目标。
                 </p>
               </div>
 
@@ -289,19 +298,19 @@ export default function DeviceSelect() {
                              font-semibold transition-colors cursor-pointer text-white
                              flex items-center justify-center gap-2"
                 >
-                  Take the Guided Tour →
+                  开始引导教程 →
                 </button>
                 <button
                   onClick={handleSkipTutorial}
                   className="w-full px-4 py-2 text-gray-500 hover:text-gray-300 text-sm
                              transition-colors cursor-pointer"
                 >
-                  Skip — I know what I'm doing
+                  跳过，我已经了解
                 </button>
               </div>
 
               <p className="text-center text-gray-600 text-[10px] mt-4">
-                The tour will load DIII-D in H-mode as a reference discharge
+                教程将载入 DIII-D 的 H 模参考放电
               </p>
             </div>
           </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { ZH_STEPS } from './tutorialStepsZh'
 
 /* ═══════════════════════════════════════════════════════════════════
    TutorialOverlay — step-by-step guided tour of the Control Room
@@ -361,6 +362,9 @@ const STEPS: TutorialStep[] = [
   },
 ]
 
+// 保留英文教程源内容供上游对照；界面实际使用中文步骤。
+void STEPS
+
 /* ═══════════════════════════════════════════════════════════════════ */
 
 interface TutorialOverlayProps {
@@ -379,7 +383,7 @@ export default function TutorialOverlay({ onComplete }: TutorialOverlayProps) {
   const isDraggingRef = useRef(false)
   const dragStartRef = useRef({ mx: 0, my: 0, top: 0, left: 0 })
 
-  const currentStep = STEPS[step]
+  const currentStep = ZH_STEPS[step]
 
   // Fade in on mount
   useEffect(() => {
@@ -499,7 +503,7 @@ export default function TutorialOverlay({ onComplete }: TutorialOverlayProps) {
   }, [])
 
   const next = useCallback(() => {
-    if (step < STEPS.length - 1) {
+    if (step < ZH_STEPS.length - 1) {
       setStep(s => s + 1)
     } else {
       setVisible(false)
@@ -586,7 +590,7 @@ export default function TutorialOverlay({ onComplete }: TutorialOverlayProps) {
             <div className="flex items-center gap-2">
               <span className="text-gray-600 text-[10px] mr-0.5" title="Drag to reposition">⠿</span>
               <span className="text-[10px] text-cyan-500 font-mono">
-                {step + 1}/{STEPS.length}
+                {step + 1}/{ZH_STEPS.length}
               </span>
               <h3 className="text-cyan-400 font-bold text-sm">{currentStep.title}</h3>
             </div>
@@ -594,12 +598,12 @@ export default function TutorialOverlay({ onComplete }: TutorialOverlayProps) {
               onClick={skip}
               className="text-gray-500 hover:text-white text-xs transition-colors cursor-pointer"
             >
-              Skip tour ✕
+              跳过教程 ✕
             </button>
           </div>
           {/* Step dots */}
           <div className="flex gap-1">
-            {STEPS.map((_, i) => (
+            {ZH_STEPS.map((_, i) => (
               <div
                 key={i}
                 className={`h-1 rounded-full transition-all duration-300 ${
@@ -631,14 +635,14 @@ export default function TutorialOverlay({ onComplete }: TutorialOverlayProps) {
                 : 'text-gray-400 hover:text-white hover:bg-gray-800'
               }`}
           >
-            ← Back
+            ← 上一步
           </button>
           <button
             onClick={next}
             className="px-4 py-1.5 bg-cyan-600 hover:bg-cyan-500 rounded text-xs font-semibold
                        transition-colors cursor-pointer text-white"
           >
-            {step === STEPS.length - 1 ? 'Start Operating →' : 'Next →'}
+            {step === ZH_STEPS.length - 1 ? '开始操作 →' : '下一步 →'}
           </button>
         </div>
       </div>

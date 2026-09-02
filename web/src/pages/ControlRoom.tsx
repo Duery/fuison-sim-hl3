@@ -13,26 +13,28 @@ import { DIIID_LIMITER } from '../lib/diiid-geometry'
 import { JET_LIMITER } from '../lib/jet-geometry'
 import { ITER_LIMITER } from '../lib/iter-geometry'
 import { CENTAUR_LIMITER } from '../lib/centaur-geometry'
+import { HL3_FIRST_WALL } from '../lib/hl3-geometry'
 
 const DEVICE_LIMITERS: Record<string, [number, number][]> = {
   diiid: DIIID_LIMITER,
   centaur: CENTAUR_LIMITER,
   jet: JET_LIMITER,
   iter: ITER_LIMITER,
+  hl3: HL3_FIRST_WALL,
 }
 
 function getPresets(deviceId: string): { id: PresetId; label: string }[] {
   if (deviceId === 'centaur') {
     // CENTAUR operates in negative-triangularity edge mode; no conventional L-mode
     return [
-      { id: 'hmode', label: 'NT-edge' },
-      { id: 'density_limit', label: 'Density limit' },
+      { id: 'hmode', label: '负三角边缘模' },
+      { id: 'density_limit', label: '密度极限' },
     ]
   }
   return [
-    { id: 'hmode', label: 'H-mode' },
-    { id: 'lmode', label: 'L-mode' },
-    { id: 'density_limit', label: 'Density limit' },
+    { id: 'hmode', label: 'H 模' },
+    { id: 'lmode', label: 'L 模' },
+    { id: 'density_limit', label: '密度极限' },
   ]
 }
 
@@ -219,7 +221,7 @@ export default function ControlRoom() {
               className="px-2 sm:px-3 py-1 bg-cyan-600 hover:bg-cyan-500 rounded text-[11px] sm:text-xs font-semibold
                          transition-colors cursor-pointer flex items-center gap-1"
             >
-              ▶ Start
+              ▶ 启动
             </button>
           ) : (
             <button
@@ -227,7 +229,7 @@ export default function ControlRoom() {
               className="px-2 sm:px-3 py-1 bg-amber-600 hover:bg-amber-500 rounded text-[11px] sm:text-xs font-semibold
                          transition-colors cursor-pointer flex items-center gap-1"
             >
-              ⏸ Pause
+              ⏸ 暂停
             </button>
           )}
           {!(running && hasCustomProgram) && (
@@ -236,7 +238,7 @@ export default function ControlRoom() {
               className="px-2 sm:px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-[11px] sm:text-xs font-semibold
                          transition-colors cursor-pointer"
             >
-              {hasCustomProgram ? '↺ Reset' : '↺ Reset'}
+              ↺ 重置
             </button>
           )}
 
@@ -271,7 +273,7 @@ export default function ControlRoom() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931ZM19.5 7.125 16.875 4.5" />
               </svg>
             )}
-            <span className="hidden sm:inline">{showPlanner ? 'Close' : 'Edit'}</span>
+            <span className="hidden sm:inline">{showPlanner ? '关闭' : '编排'}</span>
           </button>
         </div>
 
@@ -281,7 +283,7 @@ export default function ControlRoom() {
             t={time.toFixed(3)}s / {duration.toFixed(1)}s
             {finished && (
               <span className="ml-1 text-[9px] sm:text-[10px] text-gray-600">
-                {scrubTime !== null ? '(scrub)' : '(done)'}
+                {scrubTime !== null ? '（时间回看）' : '（已完成）'}
               </span>
             )}
           </div>

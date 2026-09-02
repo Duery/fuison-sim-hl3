@@ -7,25 +7,26 @@ import {
   type WaveformPoint,
   type DischargeProgram,
 } from '../lib/wasm'
+import Hl3ContextPanel from '../components/Hl3ContextPanel'
 
 // ── Preset metadata ──────────────────────────────────────────────
 const ALL_PRESETS: { id: PresetId; name: string; desc: string; color: string }[] = [
   {
     id: 'hmode',
-    name: 'Standard H-mode',
-    desc: 'Ip ramp → NBI → L-H transition → H-mode flat-top → rampdown',
+    name: '标准 H 模',
+    desc: '等离子体电流爬升 → 中性束加热 → L-H 转换 → H 模平台 → 下降段',
     color: 'cyan',
   },
   {
     id: 'lmode',
-    name: 'L-mode',
-    desc: 'Ohmic heating + modest NBI, stays in L-mode confinement',
+    name: 'L 模',
+    desc: '欧姆加热配合适度中性束加热，全程保持 L 模约束',
     color: 'amber',
   },
   {
     id: 'density_limit',
-    name: 'Density Limit',
-    desc: 'Over-fuelled shot — pushes past the Greenwald limit. Will it disrupt?',
+    name: '密度极限',
+    desc: '过量加料，将密度推过 Greenwald 极限，观察是否发生破裂',
     color: 'red',
   },
 ]
@@ -34,14 +35,14 @@ const ALL_PRESETS: { id: PresetId; name: string; desc: string; color: string }[]
 const CENTAUR_PRESETS: typeof ALL_PRESETS = [
   {
     id: 'hmode',
-    name: 'NT-edge',
-    desc: 'Negative-triangularity edge mode — ELM-free high confinement',
+    name: '负三角边缘模',
+    desc: '负三角形变边缘运行，无 ELM 的高约束场景',
     color: 'cyan',
   },
   {
     id: 'density_limit',
-    name: 'Density Limit',
-    desc: 'Over-fuelled shot — pushes past the Greenwald limit. Will it disrupt?',
+    name: '密度极限',
+    desc: '过量加料，将密度推过 Greenwald 极限，观察是否发生破裂',
     color: 'red',
   },
 ]
@@ -149,7 +150,7 @@ export default function ProgramDischarge() {
   if (!device) {
     return (
       <div className="min-h-screen flex items-center justify-center text-red-400">
-        Unknown device: {deviceId}
+        未知装置：{deviceId}
       </div>
     )
   }
@@ -165,7 +166,7 @@ export default function ProgramDischarge() {
           onClick={() => navigate('/')}
           className="font-mono text-[10px] tracking-[0.18em] uppercase text-gray-500 hover:text-cyan-400 transition-colors cursor-pointer"
         >
-          ← Device selection
+          ← 返回装置选择
         </button>
         <span className="font-mono text-[11px] tracking-[0.22em] uppercase text-gray-300">
           fusionsimulator<span className="text-gray-600">.io</span>
@@ -175,17 +176,19 @@ export default function ProgramDischarge() {
       <main className="flex-1 w-full max-w-5xl mx-auto px-6 sm:px-10 py-12">
         {/* Header */}
         <div className="panel-title mb-2">
-          <span className="panel-num">02 · </span>Program discharge
+          <span className="panel-num">02 · </span>编排放电
         </div>
         <h1 className="font-mono text-3xl sm:text-4xl font-bold tracking-tight text-white mb-2">
           {device.name}
         </h1>
         <p className="text-gray-500 text-sm font-mono mb-10">
-          Select a scenario, review the waveforms, then run.
+          选择运行场景，检查各控制波形，然后启动模拟。
         </p>
 
         {/* Scenario selector — hairline-tiled */}
-        <div className="panel-title pb-2 mb-px">Scenario</div>
+        {deviceId === 'hl3' && <Hl3ContextPanel />}
+
+        <div className="panel-title pb-2 mb-px">运行场景</div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-[var(--c-line)] border-y border-gray-800 mb-10">
           {getPresets(deviceId ?? '').map((p) => {
             const isSelected = p.id === selected
@@ -210,21 +213,21 @@ export default function ProgramDischarge() {
         {program && (
           <div className="mb-10">
             <div className="flex items-baseline justify-between mb-3 border-b border-gray-800 pb-2">
-              <h2 className="panel-title">Programmed waveforms</h2>
+              <h2 className="panel-title">预设控制波形</h2>
               <span className="text-xs text-gray-500 font-mono tabular-nums">
-                Duration {program.duration.toFixed(1)} s
+                持续时间 {program.duration.toFixed(1)} 秒
               </span>
             </div>
 
             <div className="space-y-2" key={selected}>
-              <WaveformRow label="Iₚ" unit="MA" title="Plasma current" points={program.ip} duration={program.duration} color={accentColor} />
-              <WaveformRow label="Bₜ" unit="T" title="Toroidal magnetic field" points={program.bt} duration={program.duration} color={accentColor} />
-              <WaveformRow label="n̄ₑ" unit="10²⁰m⁻³" title="Line-averaged electron density" points={program.ne_target} duration={program.duration} color={accentColor} />
-              <WaveformRow label="P_NBI" unit="MW" title="Neutral beam injection power" points={program.p_nbi} duration={program.duration} color={accentColor} />
-              <WaveformRow label="P_ECH" unit="MW" title="Electron cyclotron heating power" points={program.p_ech} duration={program.duration} color={accentColor} />
-              <WaveformRow label="P_ICH" unit="MW" title="Ion cyclotron heating power" points={program.p_ich} duration={program.duration} color={accentColor} />
-              <WaveformRow label="κ" unit="" title="Elongation" points={program.kappa} duration={program.duration} color={accentColor} />
-              <WaveformRow label="δ" unit="" title="Triangularity" points={program.delta} duration={program.duration} color={accentColor} />
+              <WaveformRow label="Iₚ" unit="MA" title="等离子体电流" points={program.ip} duration={program.duration} color={accentColor} />
+              <WaveformRow label="Bₜ" unit="T" title="环向磁场" points={program.bt} duration={program.duration} color={accentColor} />
+              <WaveformRow label="n̄ₑ" unit="10²⁰m⁻³" title="线平均电子密度" points={program.ne_target} duration={program.duration} color={accentColor} />
+              <WaveformRow label="P_NBI" unit="MW" title="中性束注入功率" points={program.p_nbi} duration={program.duration} color={accentColor} />
+              <WaveformRow label="P_ECH" unit="MW" title="电子回旋加热功率" points={program.p_ech} duration={program.duration} color={accentColor} />
+              <WaveformRow label="P_ICH" unit="MW" title="离子回旋加热功率" points={program.p_ich} duration={program.duration} color={accentColor} />
+              <WaveformRow label="κ" unit="" title="伸长率" points={program.kappa} duration={program.duration} color={accentColor} />
+              <WaveformRow label="δ" unit="" title="三角度" points={program.delta} duration={program.duration} color={accentColor} />
             </div>
           </div>
         )}
@@ -234,7 +237,7 @@ export default function ProgramDischarge() {
           onClick={() => navigate(`/run/${deviceId}?preset=${selected}`)}
           className="bg-cyan-600 px-8 py-3 text-base cursor-pointer"
         >
-          ▶ Run discharge
+          ▶ 启动放电模拟
         </button>
       </main>
     </div>

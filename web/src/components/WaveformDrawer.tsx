@@ -215,7 +215,7 @@ export default function WaveformDrawer({
             <span className="text-sm font-semibold text-gray-200">{label}</span>
             <span className="text-xs text-gray-500">({unit})</span>
           </div>
-          <span className="text-[10px] text-gray-500">Draw with mouse</span>
+          <span className="text-[10px] text-gray-500">按住鼠标绘制</span>
         </div>
 
         {/* Canvas — fixed size, no resize observer needed */}
@@ -234,12 +234,12 @@ export default function WaveformDrawer({
         <div className="flex items-center justify-between px-4 py-2.5 border-t border-gray-700">
           <button onClick={() => setDrawnWaveform(null)}
             className="px-3 py-1 rounded text-xs font-semibold bg-gray-800 text-gray-400 hover:bg-gray-700 cursor-pointer">
-            Reset
+            重置
           </button>
           <div className="flex gap-2">
             <button onClick={onClose}
               className="px-3 py-1 rounded text-xs font-semibold bg-gray-800 text-gray-400 hover:bg-gray-700 cursor-pointer">
-              Cancel
+              取消
             </button>
             <button
               onClick={() => { if (drawnWaveform) onSave(drawnWaveform); else onClose() }}
@@ -247,7 +247,7 @@ export default function WaveformDrawer({
               className={`px-4 py-1 rounded text-xs font-bold cursor-pointer ${
                 drawnWaveform ? 'bg-cyan-700 text-white hover:bg-cyan-600' : 'bg-gray-800 text-gray-600 cursor-not-allowed'
               }`}>
-              Apply
+              应用
             </button>
           </div>
         </div>

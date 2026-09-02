@@ -3,9 +3,17 @@ import type { Snapshot } from '../lib/types'
 import type { ProcessedProfile } from '../lib/types'
 import ProfilePanel from './ProfilePanel'
 import InfoPopup from './InfoPopup'
-import { plasmaParamsInfo, stabilityInfo, powerBalanceInfo, divertorInfo, neutronDiagnosticInfo } from './infoContent'
+import { plasmaParamsInfo, stabilityInfo, powerBalanceInfo, divertorInfo, neutronDiagnosticInfo } from './infoContentZh'
 import { getDevice } from '../lib/wasm'
 import { computeFusion, computeDivertorHeatFlux, DivertorThermalModel, formatNeutronRate, formatQ, neutronSignalLevel, type FusionState, type DivertorState } from '../lib/fusionPhysics'
+
+const STATUS_ZH: Record<string, string> = {
+  Ready: '就绪',
+  Running: '运行中',
+  Paused: '已暂停',
+  Disrupted: '已破裂',
+  Complete: '已完成',
+}
 
 interface Props {
   snapshot: Snapshot | null
@@ -124,7 +132,7 @@ export default function StatusPanel({
   if (!snapshot) {
     return (
       <div className="p-3 font-mono text-sm text-gray-600 flex items-center justify-center h-full">
-        Awaiting discharge…
+        等待启动放电…
       </div>
     )
   }
@@ -144,7 +152,7 @@ export default function StatusPanel({
                 : 'bg-gray-800 text-gray-300'
           }`}
         >
-          {s.disrupted ? 'DISRUPTED' : s.in_hmode ? 'H-MODE' : 'L-MODE'}
+          {s.disrupted ? '已破裂' : s.in_hmode ? 'H 模' : 'L 模'}
         </span>
         {/* Disruption risk bar */}
         <DisruptionRisk risk={s.disruption_risk} />
@@ -162,9 +170,9 @@ export default function StatusPanel({
                       ? 'bg-purple-700 text-purple-200 cursor-pointer'
                       : 'bg-gray-800 text-gray-400 hover:bg-gray-700 cursor-pointer'
                 }`}
-                title={!canShowProfiles ? 'Available after discharge completes or when paused' : ''}
+                title={!canShowProfiles ? '放电结束或暂停后可查看剖面' : ''}
               >
-                {showProfiles ? 'Params' : 'Profiles'}
+                {showProfiles ? '参数' : '剖面'}
               </button>
               {showProfiles && (
                 <>
@@ -190,7 +198,7 @@ export default function StatusPanel({
               )}
           </>
           <span className="text-[10px] text-gray-500">
-            {s.status}
+            {STATUS_ZH[s.status] ?? s.status}
           </span>
         </div>
       </div>
@@ -214,12 +222,12 @@ export default function StatusPanel({
       <div>
         <div className="flex items-center gap-2 panel-title mb-1.5">
           <span className="flex items-center gap-1">
-            Plasma parameters
-            <InfoPopup title="Plasma Parameters" position="right">{plasmaParamsInfo}</InfoPopup>
+            等离子体参数
+            <InfoPopup title="等离子体参数" position="right">{plasmaParamsInfo}</InfoPopup>
           </span>
           <span className="flex items-center gap-1 ml-auto">
-            Stability
-            <InfoPopup title="Stability Limits" position="left">{stabilityInfo}</InfoPopup>
+            稳定性
+            <InfoPopup title="稳定性极限" position="left">{stabilityInfo}</InfoPopup>
           </span>
         </div>
         <div className="grid grid-cols-3 gap-x-3 gap-y-0.5">
@@ -245,8 +253,8 @@ export default function StatusPanel({
       <div className="border-t border-gray-800 pt-1.5">
         <div className="flex items-center justify-between mb-1">
           <span className="panel-title flex items-center gap-1">
-            Power &amp; Fusion
-            <InfoPopup title="Power Balance &amp; Fusion" position="right">{powerBalanceInfo}</InfoPopup>
+            功率与聚变
+            <InfoPopup title="功率平衡与聚变" position="right">{powerBalanceInfo}</InfoPopup>
           </span>
         </div>
 
@@ -313,7 +321,7 @@ function PowerBalance({ snapshot: s, fusion, usesIch }: { snapshot: Snapshot; fu
     <div className="grid grid-cols-2 gap-x-4">
       {/* Input column */}
       <div>
-        <div className="text-[10px] text-gray-600 leading-none mb-1 uppercase tracking-wider">Input</div>
+        <div className="text-[10px] text-gray-600 leading-none mb-1 uppercase tracking-wider">输入</div>
         {inputItems.map((item, i) => (
           <PowerBar key={i} label={<>P{item.label}</>} value={item.value} total={maxPower} color={item.color} />
         ))}
@@ -321,7 +329,7 @@ function PowerBalance({ snapshot: s, fusion, usesIch }: { snapshot: Snapshot; fu
 
       {/* Output column */}
       <div>
-        <div className="text-[10px] text-gray-600 leading-none mb-1 uppercase tracking-wider">Output</div>
+        <div className="text-[10px] text-gray-600 leading-none mb-1 uppercase tracking-wider">输出</div>
         {outputItems.map((item, i) => (
           <PowerBar key={i} label={item.fullLabel ? item.label : <>P{item.label}</>} value={item.value} total={maxPower} color={item.color} />
         ))}
@@ -433,8 +441,8 @@ function NeutronDiagnostic({ fusion }: { fusion: FusionState | null }) {
       {/* Header */}
       <div className="flex items-center gap-1 mb-1">
         <span className={`text-[11px] ${isActive ? 'text-yellow-500' : 'text-gray-600'}`}>☢</span>
-        <span className="panel-title">Neutron diagnostic</span>
-        <InfoPopup title="Neutron Diagnostics" position="left">{neutronDiagnosticInfo}</InfoPopup>
+        <span className="panel-title">中子诊断</span>
+        <InfoPopup title="中子诊断" position="left">{neutronDiagnosticInfo}</InfoPopup>
         {isActive && (
           <span className="ml-auto w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse shrink-0" />
         )}
@@ -513,8 +521,8 @@ function DivertorLoading({ divertor }: { divertor: DivertorState | null }) {
     <div className="border-t border-gray-800 pt-1.5">
       <div className="flex items-center gap-1.5 mb-1">
         <span className="panel-title flex items-center gap-1">
-          Divertor
-          <InfoPopup title="Divertor Thermal Loading" position="right">{divertorInfo}</InfoPopup>
+          偏滤器
+          <InfoPopup title="偏滤器热负荷" position="right">{divertorInfo}</InfoPopup>
         </span>
         <span className="text-[10px] text-gray-600 tabular-nums">
           λ<sub>q</sub>={lambda.toFixed(1)} mm
@@ -584,7 +592,7 @@ function DivertorLoading({ divertor }: { divertor: DivertorState | null }) {
               transition: 'all 0.15s',
             }}
           />
-          <span className="text-[9px] text-red-400/80">W recrystallization risk</span>
+          <span className="text-[9px] text-red-400/80">钨重结晶风险</span>
         </div>
       )}
     </div>
@@ -601,7 +609,7 @@ function DisruptionRisk({ risk }: { risk: number }) {
 
   return (
     <div className="flex items-center gap-1.5 flex-1 min-w-0">
-      <span className="text-[10px] text-gray-500">Disruption risk</span>
+      <span className="text-[10px] text-gray-500">破裂风险</span>
       <div className="w-24 h-2.5 bg-gray-800 rounded-full overflow-hidden">
         <div
           className="h-full rounded-full transition-all duration-300"

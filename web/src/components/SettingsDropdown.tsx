@@ -36,7 +36,7 @@ export default function SettingsDropdown({ onRestartTutorial }: { onRestartTutor
         onClick={() => setOpen(!open)}
         className="settings-btn px-1.5 py-1 rounded text-gray-400 hover:text-gray-200
                    transition-colors cursor-pointer flex items-center gap-1"
-        title="Settings"
+        title="设置"
       >
         <svg
           className="w-4 h-4"
@@ -64,12 +64,12 @@ export default function SettingsDropdown({ onRestartTutorial }: { onRestartTutor
                         bg-gray-900 border-gray-700">
           {/* Header */}
           <div className="settings-heading text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
-            Settings
+            设置
           </div>
 
           {/* Theme toggle */}
           <div>
-            <div className="text-[10px] text-gray-500 mb-1.5 tracking-wide">Theme</div>
+            <div className="text-[10px] text-gray-500 mb-1.5 tracking-wide">界面主题</div>
             <div className="flex rounded overflow-hidden border border-gray-700">
               {(['signature', 'retro'] as Theme[]).map((t) => (
                 <button
@@ -82,7 +82,7 @@ export default function SettingsDropdown({ onRestartTutorial }: { onRestartTutor
                         : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-gray-200'
                     }`}
                 >
-                  {t}
+                  {t === 'signature' ? '经典' : '复古'}
                 </button>
               ))}
             </div>
@@ -90,7 +90,7 @@ export default function SettingsDropdown({ onRestartTutorial }: { onRestartTutor
 
           {/* Units toggle */}
           <div>
-            <div className="text-[10px] text-gray-500 mb-1.5 tracking-wide">Units</div>
+            <div className="text-[10px] text-gray-500 mb-1.5 tracking-wide">单位制</div>
             <div className="flex rounded overflow-hidden border border-gray-700">
               {(['metric', 'imperial'] as Units[]).map((u) => (
                 <button
@@ -103,12 +103,12 @@ export default function SettingsDropdown({ onRestartTutorial }: { onRestartTutor
                         : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-gray-200'
                     }`}
                 >
-                  {u}
+                  {u === 'metric' ? '国际单位' : '厘米克秒制'}
                 </button>
               ))}
             </div>
             <div className="text-[9px] text-gray-600 mt-1">
-              {units === 'metric' ? 'SI: m, T, keV, MA' : 'CGS: cm, kG, keV, kA'}
+              {units === 'metric' ? 'SI：m、T、keV、MA' : 'CGS：cm、kG、keV、kA'}
             </div>
           </div>
 
@@ -128,7 +128,7 @@ export default function SettingsDropdown({ onRestartTutorial }: { onRestartTutor
               <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
               </svg>
-              Restart Tutorial
+              重新开始教程
             </button>
           )}
 
@@ -144,7 +144,7 @@ export default function SettingsDropdown({ onRestartTutorial }: { onRestartTutor
             <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
             </svg>
-            Physics Bibliography
+            物理模型与参考文献
           </button>
 
           {/* Version */}

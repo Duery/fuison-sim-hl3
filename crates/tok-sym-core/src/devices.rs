@@ -220,26 +220,78 @@ fn iter_wall() -> Vec<(f64, f64)> {
     wall
 }
 
-/// Approximate HL-3 first wall outline (D-shaped, parametric).
+/// HL-3 first-wall outline reconstructed from the `addFirstWall_2m.m`
+/// engineering plotting data supplied with the HL-3 diagnostic references.
 ///
-/// HL-3 (Huanliu-3, formerly HL-2M) at the Southwestern Institute of
-/// Physics (SWIP), Chengdu, China. Public design parameters: R0 = 1.78 m,
-/// a = 0.65 m, kappa ~ 1.75, delta ~ 0.40, lower-single-null diverted plasma.
-/// Traversed clockwise starting from the outboard midplane.
+/// The source coordinates are centimetres in the original drawing frame.
+/// The translation below converts them to the tokamak R-Z frame in metres.
 fn hl3_wall() -> Vec<(f64, f64)> {
-    let n = 60;
-    let r0 = 1.78;
-    let a_wall = 0.88;
-    let kappa_wall = 1.75;
-    let delta_wall: f64 = 0.40;
-    let mut wall = Vec::with_capacity(n + 1);
-    for i in 0..=n {
-        let theta = 2.0 * std::f64::consts::PI * (i as f64) / (n as f64);
-        let r = r0 + a_wall * (theta + delta_wall * theta.sin()).cos();
-        let z = kappa_wall * a_wall * theta.sin();
-        wall.push((r, z));
+    fn append_arc(
+        points: &mut Vec<(f64, f64)>,
+        center: (f64, f64),
+        radius: f64,
+        start_deg: f64,
+        end_deg: f64,
+        count: usize,
+    ) {
+        for index in 0..count {
+            let fraction = if count > 1 {
+                index as f64 / (count - 1) as f64
+            } else {
+                0.0
+            };
+            let angle = (start_deg + (end_deg - start_deg) * fraction).to_radians();
+            points.push((
+                center.0 + radius * angle.cos(),
+                center.1 + radius * angle.sin(),
+            ));
+        }
     }
-    wall
+
+    let mut source_cm = Vec::with_capacity(130);
+    source_cm.extend_from_slice(&[
+        (279.4088, 210.4434), (279.4088, 215.8424), (279.3837, 224.7363),
+        (275.1420, 237.7434), (271.0619, 250.2251), (267.0004, 262.7096),
+        (260.6884, 274.1881), (254.4164, 285.5746), (246.2068, 295.7819),
+        (239.0861, 301.2763), (227.5680, 307.4100), (181.7722, 331.3818),
+    ]);
+    append_arc(&mut source_cm, (170.9088, 310.5434), 23.5, 63.0, 180.0, 30);
+    source_cm.extend_from_slice(&[
+        (147.4088, 310.5434), (147.8723, 298.0014), (145.8723, 291.7141),
+    ]);
+    append_arc(&mut source_cm, (144.4088, 292.0434), 1.5, 347.0, 270.0, 5);
+    source_cm.extend_from_slice(&[
+        (144.4088, 290.5434), (141.4088, 290.5434), (141.4088, 130.2399),
+        (145.4088, 130.2434),
+    ]);
+    append_arc(&mut source_cm, (145.4111, 127.7434), 2.5, 90.0, 30.0, 6);
+    source_cm.extend_from_slice(&[(147.5761, 128.9934), (151.5761, 122.0652)]);
+    append_arc(&mut source_cm, (149.4111, 120.8152), 2.5, 30.0, -5.0, 5);
+    source_cm.extend_from_slice(&[
+        (151.9016, 120.5973), (148.7465, 84.5351), (151.4974, 85.8482),
+        (159.6235, 78.7344),
+    ]);
+    append_arc(&mut source_cm, (162.9169, 82.4964), 5.0, 229.0, 249.0, 5);
+    source_cm.extend_from_slice(&[(161.1088, 77.8348), (166.7027, 75.6651)]);
+    append_arc(&mut source_cm, (169.7765, 83.5898), 8.5, 249.0, 270.0, 5);
+    source_cm.extend_from_slice(&[
+        (169.7765, 75.0898), (186.2765, 75.0898), (188.0549, 72.7898),
+        (192.2549, 72.7898), (192.5897, 73.3470), (189.3141, 83.4282),
+    ]);
+    append_arc(&mut source_cm, (195.4960, 85.4368), 6.5, 198.0, 148.0, 6);
+    source_cm.extend_from_slice(&[(189.9836, 88.8813), (193.1632, 93.9696)]);
+    append_arc(&mut source_cm, (199.9476, 89.7302), 8.0, 148.0, 118.0, 5);
+    source_cm.extend_from_slice(&[
+        (196.1918, 96.7938), (203.2554, 100.5496), (227.5680, 113.4768),
+        (239.0861, 119.6106), (246.1353, 125.0350), (254.3607, 135.2292),
+        (266.9606, 158.0855), (271.0619, 170.6317), (275.0768, 182.9434),
+        (279.3837, 196.1506), (279.4088, 205.0434), (279.4088, 210.4434),
+    ]);
+
+    source_cm
+        .into_iter()
+        .map(|(r, z)| ((r - 30.9088) / 100.0, (z - 210.4434) / 100.0))
+        .collect()
 }
 
 pub fn diiid() -> Device {
@@ -435,8 +487,8 @@ pub fn centaur() -> Device {
 /// HL-3 (Huanliu-3, formerly HL-2M) — China's flagship medium-sized tokamak
 /// at the Southwestern Institute of Physics (SWIP), Chengdu.
 ///
-/// Public design parameters: R0 = 1.78 m, a = 0.65 m, Bt <= 2.2 T,
-/// Ip <= 2.5 MA (design targets up to 3.0 MA). Lower-single-null diverted
+/// Project HL-3 limits: R0 = 1.78 m, a = 0.65 m, Bt <= 2.3 T,
+/// Ip <= 3.0 MA. Lower-single-null diverted
 /// H-mode machine with NBI + ECRH + LHCD heating. Achieved 1 MA plasmas in
 /// 2024 and high-confinement H-mode operation in 2023.
 pub fn hl3() -> Device {
@@ -445,8 +497,8 @@ pub fn hl3() -> Device {
         id: "hl3".to_string(),
         r0: 1.78,
         a: 0.65,
-        bt_max: 2.2,
-        ip_max: 2.5,
+        bt_max: 2.3,
+        ip_max: 3.0,
         kappa: 1.75,
         delta_upper: 0.40,
         delta_lower: 0.40,
@@ -517,5 +569,12 @@ mod tests {
         let last = d.wall_outline.last().unwrap();
         assert!((first.0 - last.0).abs() < 0.01);
         assert!((first.1 - last.1).abs() < 0.01);
+    }
+
+    #[test]
+    fn test_hl3_operating_limits() {
+        let device = hl3();
+        assert!((device.bt_max - 2.3).abs() < f64::EPSILON);
+        assert!((device.ip_max - 3.0).abs() < f64::EPSILON);
     }
 }

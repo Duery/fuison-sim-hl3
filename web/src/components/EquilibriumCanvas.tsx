@@ -1,7 +1,7 @@
 import { useRef, useEffect, useCallback } from 'react'
 import type { Snapshot, Contour } from '../lib/types'
 import InfoPopup from './InfoPopup'
-import { equilibriumInfo } from './infoContent'
+import { equilibriumInfo } from './infoContentZh'
 import { useSettings } from '../lib/settingsContext'
 
 interface Props {
@@ -82,7 +82,7 @@ export default function EquilibriumCanvas({ snapshot, wallJson, limiterPoints }:
       ctx.fillStyle = '#4b5563'
       ctx.font = '14px monospace'
       ctx.textAlign = 'center'
-      ctx.fillText('No equilibrium data', W / 2, H / 2)
+      ctx.fillText('暂无磁平衡数据', W / 2, H / 2)
       return
     }
 
@@ -387,10 +387,10 @@ export default function EquilibriumCanvas({ snapshot, wallJson, limiterPoints }:
       labelY -= 16
       if (snapshot.in_hmode) {
         ctx.fillStyle = labelHighlight
-        ctx.fillText('H-mode', labelX, labelY)
+        ctx.fillText('H 模', labelX, labelY)
       } else {
         ctx.fillStyle = labelColor
-        ctx.fillText('L-mode', labelX, labelY)
+        ctx.fillText('L 模', labelX, labelY)
       }
       labelY -= 16
       ctx.fillStyle = labelColor
@@ -398,10 +398,10 @@ export default function EquilibriumCanvas({ snapshot, wallJson, limiterPoints }:
       labelY -= 16
       if (snapshot.is_limited) {
         ctx.fillStyle = isRetro ? '#ccaa00' : '#f59e0b'
-        ctx.fillText('Limited', labelX, labelY)
+        ctx.fillText('限制器位形', labelX, labelY)
       } else {
         ctx.fillStyle = '#6b7280'
-        ctx.fillText('Diverted', labelX, labelY)
+        ctx.fillText('偏滤器位形', labelX, labelY)
       }
     }
   }, [snapshot, wallJson, limiterPoints, isRetro])
@@ -425,8 +425,8 @@ export default function EquilibriumCanvas({ snapshot, wallJson, limiterPoints }:
       <canvas ref={canvasRef} className="absolute inset-0" />
       {/* Title overlay */}
       <div className="absolute top-2 left-3 panel-title flex items-center gap-1.5">
-        <span className="pointer-events-none"><span className="panel-num">01 · </span>Equilibrium</span>
-        <InfoPopup title="Magnetic Equilibrium" position="right">
+        <span className="pointer-events-none"><span className="panel-num">01 · </span>磁平衡截面</span>
+        <InfoPopup title="磁平衡" position="right">
           {equilibriumInfo}
         </InfoPopup>
       </div>

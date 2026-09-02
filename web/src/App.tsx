@@ -3,7 +3,7 @@ import { Analytics } from '@vercel/analytics/react'
 import DeviceSelect from './pages/DeviceSelect'
 import ProgramDischarge from './pages/ProgramDischarge'
 import ControlRoom from './pages/ControlRoom'
-import Bibliography from './pages/Bibliography'
+import Bibliography from './pages/BibliographyZh'
 
 export default function App() {
   return (

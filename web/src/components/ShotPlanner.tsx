@@ -43,14 +43,14 @@ interface Props {
 /* ─── Parameter definitions ─────────────────────────────── */
 
 const SCALAR_PARAMS: ScalarParam[] = [
-  { key: 'ip', label: 'Iₚ flat-top', unit: 'MA', waveformKey: 'ip', min: 0.1, max: 20, step: 0.1, precision: 1 },
-  { key: 'p_nbi', label: 'NBI power', unit: 'MW', waveformKey: 'p_nbi', min: 0, max: 40, step: 0.5, precision: 1 },
-  { key: 'p_ech', label: 'ECH power', unit: 'MW', waveformKey: 'p_ech', min: 0, max: 20, step: 0.5, precision: 1 },
-  { key: 'ne', label: 'Density target', unit: '10²⁰m⁻³', waveformKey: 'ne_target', min: 0.1, max: 3.0, step: 0.05, precision: 2 },
-  { key: 'd2_puff', label: 'D₂ gas puff', unit: '10²⁰/s', waveformKey: 'd2_puff', min: 0, max: 10, step: 0.5, precision: 1 },
-  { key: 'neon_puff', label: 'Neon seeding', unit: '10²⁰/s', waveformKey: 'neon_puff', min: 0, max: 2.0, step: 0.05, precision: 2 },
-  { key: 'kappa', label: 'Elongation κ', unit: '', waveformKey: 'kappa', min: 1.0, max: 2.2, step: 0.05, precision: 2 },
-  { key: 'delta', label: 'Triangularity δ', unit: '', waveformKey: 'delta', min: -0.6, max: 0.8, step: 0.05, precision: 2 },
+  { key: 'ip', label: 'Iₚ 平台值', unit: 'MA', waveformKey: 'ip', min: 0.1, max: 20, step: 0.1, precision: 1 },
+  { key: 'p_nbi', label: 'NBI 功率', unit: 'MW', waveformKey: 'p_nbi', min: 0, max: 40, step: 0.5, precision: 1 },
+  { key: 'p_ech', label: 'ECH 功率', unit: 'MW', waveformKey: 'p_ech', min: 0, max: 20, step: 0.5, precision: 1 },
+  { key: 'ne', label: '目标密度', unit: '10²⁰m⁻³', waveformKey: 'ne_target', min: 0.1, max: 3.0, step: 0.05, precision: 2 },
+  { key: 'd2_puff', label: 'D₂ 充气', unit: '10²⁰/s', waveformKey: 'd2_puff', min: 0, max: 10, step: 0.5, precision: 1 },
+  { key: 'neon_puff', label: '氖杂质注入', unit: '10²⁰/s', waveformKey: 'neon_puff', min: 0, max: 2.0, step: 0.05, precision: 2 },
+  { key: 'kappa', label: '伸长率 κ', unit: '', waveformKey: 'kappa', min: 1.0, max: 2.2, step: 0.05, precision: 2 },
+  { key: 'delta', label: '三角度 δ', unit: '', waveformKey: 'delta', min: -0.6, max: 0.8, step: 0.05, precision: 2 },
 ]
 
 /* ─── Per-device duration limits ───────────────────────── */
@@ -223,7 +223,7 @@ export default function ShotPlanner({
   if (!baseProgram || !device) {
     return (
       <div className="p-4 text-gray-500 font-mono text-sm">
-        Loading program data…
+        正在载入放电程序…
       </div>
     )
   }
@@ -245,8 +245,8 @@ export default function ShotPlanner({
       {/* Header */}
       <div className="flex items-center justify-between p-3 border-b border-gray-800">
         <div>
-          <h2 className="panel-title">Shot Planner</h2>
-          <p className="text-[9px] text-gray-600 mt-0.5">Click any trace to draw a custom waveform</p>
+          <h2 className="panel-title">放电编排器</h2>
+          <p className="text-[9px] text-gray-600 mt-0.5">点击任意迹线即可绘制自定义控制波形</p>
         </div>
         <button
           onClick={onClose}
@@ -260,7 +260,7 @@ export default function ShotPlanner({
       <div className="flex-1 overflow-y-auto p-3 space-y-4">
         {/* Preset selector */}
         <div>
-          <label className="text-[10px] text-gray-500 uppercase tracking-wider">Base preset</label>
+          <label className="text-[10px] text-gray-500 uppercase tracking-wider">基础场景</label>
           <div className="flex rounded overflow-hidden border border-gray-700 mt-1">
             {(deviceId === 'centaur'
               ? (['hmode', 'density_limit'] as PresetId[])
@@ -277,8 +277,8 @@ export default function ShotPlanner({
                   }`}
               >
                 {p === 'hmode'
-                  ? (deviceId === 'centaur' ? 'NT-edge' : 'H-mode')
-                  : p === 'lmode' ? 'L-mode' : 'Dens. lim.'}
+                  ? (deviceId === 'centaur' ? '负三角边缘模' : 'H 模')
+                  : p === 'lmode' ? 'L 模' : '密度极限'}
               </button>
             ))}
           </div>
@@ -287,12 +287,12 @@ export default function ShotPlanner({
         {/* Magnetic config selector — DIII-D only */}
         {deviceId === 'diiid' && (
           <div>
-            <label className="text-[10px] text-gray-500 uppercase tracking-wider">Magnetic configuration</label>
+            <label className="text-[10px] text-gray-500 uppercase tracking-wider">磁位形</label>
             <div className="flex rounded overflow-hidden border border-gray-700 mt-1">
               {([
-                ['LowerSingleNull', 'Lower SN'],
-                ['DoubleNull', 'Double Null'],
-                ['UpperSingleNull', 'Upper SN'],
+                ['LowerSingleNull', '下单零位形'],
+                ['DoubleNull', '双零位形'],
+                ['UpperSingleNull', '上单零位形'],
               ] as [MagneticConfig, string][]).map(([cfg, label]) => (
                 <button
                   key={cfg}
@@ -315,7 +315,7 @@ export default function ShotPlanner({
 
         {/* Duration */}
         <div>
-          <label className="text-[10px] text-gray-500 uppercase tracking-wider">Duration</label>
+          <label className="text-[10px] text-gray-500 uppercase tracking-wider">持续时间</label>
           <div className="flex items-center gap-2 mt-1">
             <input
               type="range"
@@ -336,7 +336,7 @@ export default function ShotPlanner({
               className="w-16 bg-gray-800 border border-gray-700 rounded px-2 py-1 text-xs
                          text-cyan-400 font-mono text-right focus:outline-none focus:border-cyan-600"
             />
-            <span className="text-[10px] text-gray-500 w-4">s</span>
+            <span className="text-[10px] text-gray-500 w-4">秒</span>
           </div>
         </div>
 
@@ -355,7 +355,7 @@ export default function ShotPlanner({
                 <button
                   onClick={() => setDrawingParam(param.key)}
                   className="relative cursor-pointer hover:opacity-100 opacity-70 transition-opacity hover:ring-1 hover:ring-cyan-600 rounded group"
-                  title="Click to draw waveform"
+                  title="点击绘制波形"
                 >
                   <span className="absolute -top-1 -right-1 text-[7px] text-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity">
                     ✎
@@ -401,7 +401,7 @@ export default function ShotPlanner({
 
         {/* Device info */}
         <div className="text-[10px] text-gray-600 space-y-0.5 pt-2 border-t border-gray-800">
-          <div>Device: {device.name}</div>
+          <div>装置：{device.name}</div>
           <div>R₀ = {device.r0.toFixed(2)} m, a = {device.a.toFixed(2)} m</div>
           <div>Bₜ,max = {device.bt_max.toFixed(1)} T, Iₚ,max = {device.ip_max.toFixed(1)} MA</div>
         </div>
@@ -414,14 +414,14 @@ export default function ShotPlanner({
           className="w-full px-4 py-1.5 bg-gray-700 hover:bg-gray-600 rounded text-xs font-semibold
                      transition-colors cursor-pointer"
         >
-          ↺ Reset Parameters
+          ↺ 重置参数
         </button>
         <button
           onClick={handleRun}
           className="w-full px-4 py-2 bg-cyan-600 hover:bg-cyan-500 rounded text-sm font-bold
                      transition-colors cursor-pointer"
         >
-          ▶ Run Discharge
+          ▶ 运行放电
         </button>
       </div>
 

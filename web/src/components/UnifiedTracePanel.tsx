@@ -4,7 +4,7 @@ import type { DischargeProgram } from '../lib/wasm'
 import { getDevice } from '../lib/wasm'
 import { computeTargetTraces, type TargetTraces } from '../lib/targetTraces'
 import InfoPopup from './InfoPopup'
-import { traceInfoContent } from './infoContent'
+import { traceInfoContent } from './infoContentZh'
 import { useSettings } from '../lib/settingsContext'
 
 /* ─── Full trace catalogue ───────────────────────────────── */
@@ -25,7 +25,7 @@ const ALL_TRACES: TraceConfig[] = [
   { key: 'ip',               base: 'I',     sub: 'p',       unit: 'MA',       color: '#56B4E9', targetKey: 'ip' },
   { key: 'beta_n',           base: 'β',     sub: 'N',       unit: '',         color: '#E69F00', targetKey: 'beta_n' },
   { key: 'li',               base: 'l',     sub: 'i',       unit: '',         color: '#92C5DE', yMin: 0, yMax: 1.5 },
-  { key: 'd_alpha',          base: 'D',     sub: 'α',       unit: 'a.u.',     color: '#D55E00' },
+  { key: 'd_alpha',          base: 'D',     sub: 'α',       unit: '任意单位',  color: '#D55E00' },
   { key: 'q95',              base: 'q',     sub: '95',      unit: '',         color: '#CC79A7', yMax: 10 },
   { key: 'h_factor',         base: 'H',     sub: '98',      unit: '',         color: '#009E73' },
   { key: 'f_greenwald',      base: 'f',     sub: 'GW',      unit: '',         color: '#0072B2' },
@@ -529,7 +529,7 @@ export default function UnifiedTracePanel({
     // X-axis unit label — to the left of the first tick
     ctx.textAlign = 'right'
     ctx.fillStyle = '#4b5563'
-    ctx.fillText('[sec]', toX(0) - 12, totalH - 12)
+    ctx.fillText('[秒]', toX(0) - 12, totalH - 12)
   }, [history, duration, targets, scrubTime, elmActive, activeTraces, isRetro])
 
   // Redraw on data changes
@@ -588,7 +588,7 @@ export default function UnifiedTracePanel({
       />
       {/* ── Trace selector dropdown ── */}
       <div ref={dropdownRef} className="absolute top-1 right-1 z-10 flex items-center gap-1">
-        <InfoPopup title="Trace Reference" position="left">
+        <InfoPopup title="迹线说明" position="left">
           {traceInfoContent(ALL_TRACES)}
         </InfoPopup>
         <button
@@ -597,7 +597,7 @@ export default function UnifiedTracePanel({
                      bg-gray-800/80 text-gray-300 border border-gray-600/50
                      hover:bg-gray-700/80 hover:text-white transition-colors"
         >
-          Traces ({selectedKeys.size})
+          时间迹线（{selectedKeys.size}）
         </button>
         {dropdownOpen && (
           <div
